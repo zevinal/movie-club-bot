@@ -29,10 +29,10 @@ class MovieBot(commands.Cog):
         
         # For simplicity's sake, take the first result for now (will change to dropdown in future)
         selected = results[0]
-        added = await add_movie(selected["title"], selected["year"], interaction.user.display_name)
+        added = await add_movie(selected["title"], selected["year"], interaction.user.name)
         if added:
             await interaction.response.send_message(
-                f"✅ Suggested **{selected['title']} ({selected['year']})** by {interaction.user.display_name}"
+                f"✅ Suggested **{selected['title']} ({selected['year']})** by {interaction.user.name}"
             )
         else:
             await interaction.response.send_message(
@@ -66,7 +66,7 @@ class MovieBot(commands.Cog):
     @app_commands.command(name="remove_suggestion", description="Remove your own movie suggestion")
     @app_commands.describe(title="Type the partial or full title of the movie you wish to remove from the list")
     async def remove_suggestion(self, interaction: discord.Interaction, title: str):
-        removed = await remove_suggestion(title, interaction.user.display_name)
+        removed = await remove_suggestion(title, interaction.user.name)
         if removed:
             await interaction.response.send_message(
                 f"🗑️ Removed **{removed[0]} ({removed[1]})** from the list."
