@@ -39,3 +39,18 @@ async def get_random_movie():
     async with aiosqlite.connect(DB_PATH) as db:
         cursor = await db.execute("SELECT title, year, suggester FROM suggestions ORDER BY RANDOM() LIMIT 1")
         return await cursor.fetchone()
+
+async def remove_suggestion(title_query, user):
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute("""
+            SELECT title, year FROM suggestions 
+            WHERE LOWER(title) LIKE ? AND suggester = ?
+            LIMIT 1
+        """, (f"%{title_query.lower()}%", user))
+        result = await cursor.fetchone()
+        if result:
+            await db.execute("DELETE FROM suggestions WHERE title = ? AND year = ?", result)
+            await db.commit()
+            return result
+        else:
+            return None

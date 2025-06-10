@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import os
 from dotenv import load_dotenv
-from db import init_db, add_movie, get_all_movies, get_random_movie, delete_movie
+from db import init_db, add_movie, get_all_movies, get_random_movie, delete_movie, remove_suggestion
 from tmdb import search_movies
 
 load_dotenv()
@@ -50,7 +50,35 @@ class MovieBot(commands.Cog):
         await delete_movie(title, year)
         await interaction.response.send_message(f"🎬 The movie for this week is **{title} ({year})** - suggested by **{suggester}**!")
 
+    @app_commands.command(name="list_movies", description="List all suggested movies")
+    async def list_movies(self, interaction: discord.Interaction):
+        movies = await get_all_movies()
+        if not movies:
+            await interaction.response.send_message("There are no movies in the hat yet!", ephemeral=True)
+            return
+        
+        response = "**🎞️ Movie Suggestions:**\n\n"
+        for title, year, suggester in movies:
+            response += f"- **{title} ({year})** - suggested by {suggester}\n"
+
+        await interaction.response.send_message(response[:2000])
+
+    @app_commands.command(name="remove_suggestion", description="Remove your own movie suggestion")
+    @app_commands.describe(title="Type the partial or full title of the movie you wish to remove from the list")
+    async def remove_suggestion(self, interaction: discord.Interaction, title: str):
+        removed = await remove_suggestion(title, interaction.user.display_name)
+        if removed:
+            await interaction.response.send_message(
+                f"🗑️ Removed **{removed[0]} ({removed[1]})** from the list."
+            )
+        else:
+            await interaction.response.send_message(
+                f"❌ Could not find a suggestion titled '{title}' made by you.", ephemeral=True
+            )
+
 bot.tree.add_command(MovieBot().suggest_movie)
 bot.tree.add_command(MovieBot().draw_movie)
+bot.tree.add_command(MovieBot().list_movies)
+bot.tree.add_command(MovieBot().remove_suggestion)
 
 bot.run(TOKEN)
