@@ -9,7 +9,7 @@ async def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 year TEXT NOT NULL,
-                suggester TEXT NOT NULL,
+                suggester INTEGER NOT NULL,
                 UNIQUE(title, year)
             )
         """)

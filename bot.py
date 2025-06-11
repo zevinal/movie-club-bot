@@ -29,10 +29,10 @@ class MovieBot(commands.Cog):
         
         # For simplicity's sake, take the first result for now (will change to dropdown in future)
         selected = results[0]
-        added = await add_movie(selected["title"], selected["year"], interaction.user.name)
+        added = await add_movie(selected["title"], selected["year"], interaction.user.id)
         if added:
             await interaction.response.send_message(
-                f"✅ Suggested **{selected['title']} ({selected['year']})** by {interaction.user.name}"
+                f"✅ Suggested **{selected['title']} ({selected['year']})** by <@{interaction.user.id}>", allowed_mentions=discord.AllowedMentions.none()
             )
         else:
             await interaction.response.send_message(
@@ -48,7 +48,7 @@ class MovieBot(commands.Cog):
         
         title, year, suggester = movie
         await delete_movie(title, year)
-        await interaction.response.send_message(f"🎬 The movie for this week is **{title} ({year})** - suggested by **{suggester}**!")
+        await interaction.response.send_message(f"🎬 The movie for this week is **{title} ({year})** - suggested by **<@{suggester}>**!", allowed_mentions=discord.AllowedMentions.none())
 
     @app_commands.command(name="list_movies", description="List all suggested movies")
     async def list_movies(self, interaction: discord.Interaction):
@@ -59,14 +59,14 @@ class MovieBot(commands.Cog):
         
         response = "**🎞️ Movie Suggestions:**\n\n"
         for title, year, suggester in movies:
-            response += f"- **{title} ({year})** - suggested by {suggester}\n"
+            response += f"- **{title} ({year})** - suggested by <@{suggester}>\n"
 
-        await interaction.response.send_message(response[:2000])
+        await interaction.response.send_message(response[:2000], allowed_mentions=discord.AllowedMentions.none())
 
     @app_commands.command(name="remove_suggestion", description="Remove your own movie suggestion")
     @app_commands.describe(title="Type the partial or full title of the movie you wish to remove from the list")
     async def remove_suggestion(self, interaction: discord.Interaction, title: str):
-        removed = await remove_suggestion(title, interaction.user.name)
+        removed = await remove_suggestion(title, interaction.user.id)
         if removed:
             await interaction.response.send_message(
                 f"🗑️ Removed **{removed[0]} ({removed[1]})** from the list."
