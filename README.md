@@ -44,7 +44,7 @@ python bot.py
 ### Notes
 
 - Uses SQLite for simple storage.
-- You can expand this bot to include listing, removing, and tracking past movie draws.
+- You can expand this bot to include tracking past movie draws.
 
 ## Contributing
 
