@@ -13,7 +13,8 @@ async def search_movies(query):
             results = [
                 {
                     "title": movie["title"],
-                    "year": movie.get("release_date", "????")[:4]
+                    "year": movie.get("release_date", "????")[:4],
+                    "id": movie["id"] # Adding the movie ID helps avoid crashes when 2 movies with the same name were released in the same year e.g. Mulan(2020) - Disney, and Mulan(2020) - China
                 }
                 for movie in data.get("results", [])[:5]
             ]

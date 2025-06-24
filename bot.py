@@ -93,9 +93,9 @@ class MovieSelect(Select):
         self.interaction = interaction
         options = [
             discord.SelectOption(
-                label=movie["title"],
+                label=f"{movie['title']} ({movie['year']})",
                 description=movie["year"],
-                value=f"{movie['title']}|{movie['year']}"
+                value=f"{movie['id']}|{movie['title']}|{movie['year']}"
             )
             for movie in results
         ]
@@ -106,7 +106,7 @@ class MovieSelect(Select):
             await interaction.response.send_message("Only <@{interaction.user.id}> can select from this list.", allowed_mentions=discord.AllowedMentions.none())
             return
         
-        title, year = self.values[0].split("|")
+        id, title, year = self.values[0].split("|")
         added = await add_movie(title, year, self.interaction.user.id)
 
         if added:
